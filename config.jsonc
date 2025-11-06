@@ -52,9 +52,12 @@
     "tray": {
         "spacing": 10,
         "icon-size": 21,
-        "show-passive-items": false,
-        "reverse-direction": false
-    },
+        "show-passive-items": true,
+        "reverse-direction": false,
+        "icons": {
+        	"spotify": " "
+            }
+    	},
 
     "clock": {
         "format": "{:%A %d %B %Y, %H:%M:%S}",
