@@ -1,0 +1,126 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 32,
+    "spacing": 6,
+    
+    "modules-left": [
+        "sway/workspaces",
+        "sway/mode",
+        "sway/scratchpad"
+    ],
+    "modules-center": [
+        "custom/clock",
+        "mpris"
+    ],
+    "modules-right": [
+        "pulseaudio",
+        "custom/network",
+		"custom/sysinfo",
+        "custom/battery",
+        "tray"
+    ],
+
+    "sway/workspaces": {
+        "disable-scroll": false,
+        "all-outputs": true,
+        "format": "{name}",
+        "format-icons": {
+            "1": "1",
+            "2": "2",
+            "3": "3",
+            "4": "4",
+            "5": "5",
+            "urgent": "!",
+            "focused": "●",
+            "default": "○"
+        }
+    },
+
+    "sway/mode": {
+        "format": "<span style=\"italic\">{}</span>"
+    },
+
+    "sway/scratchpad": {
+        "format": "{icon} {count}",
+        "show-empty": false,
+        "format-icons": ["", ""],
+        "tooltip": true,
+        "tooltip-format": "{app}: {title}"
+    },
+
+    "tray": {
+        "spacing": 10,
+        "icon-size": 17,
+        "show-passive-items": true,
+        "reverse-direction": false,
+        "icons": {
+        	"spotify": " "
+            }
+    	},
+    	
+    "custom/clock": {
+      "exec": "date '+%a %d %b %H:%M:%S'",
+      "interval": 1
+    },
+    
+    "battery": {
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{capacity}% {icon}",
+        "format-full": "{capacity}% {icon}",
+        "format-charging": "{capacity}% ",
+        "format-plugged": "{capacity}% ",
+        "format-icons": ["", "", "", "", ""],
+       	"interval": 10
+	},
+
+	"custom/battery": {
+		"exec": "/home/martin/.config/scripts.rs/target/release/battery",
+		"interval": 1,
+		"on-click": "/home/martin/.config/scripts.rs/target/release/change_battery_mode"
+	},
+
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-muted": "",
+        "format-icons": {
+                    "headphone": "",
+                    "hands-free": "",
+                    "headset": "",
+                    "phone": "",
+                    "portable": "",
+                    "car": "",
+                    "default": ["", "", ""]
+        },
+        "on-click": "pavucontrol",
+        "interval":5
+    },
+
+    "custom/network": {
+          "exec": "~/.config/waybar/scripts/network_status.sh",
+          "interval": 5,
+          "on-click": "~/.config/waybar/scripts/network_status.sh next",
+	},
+
+	"mpris": {
+	    "player": "spotify",
+	    "format": " {title}",
+	    "format-paused": "⏸ {title}",
+	    "format-stopped": "",
+	    "interval": 1,
+	    "on-click": "playerctl play-pause",
+	    "on-scroll-up": "playerctl next",
+	    "on-scroll-down": "playerctl previous",
+	    "hide-disconnected": true
+	},
+	"custom/sysinfo": {
+	  "exec": "~/.config/scripts.rs/target/release/sysinfo",
+	  "interval": 1,
+	  "on-click": "foot -e btop",
+	  "tooltip": false
+	}
+	
+}
