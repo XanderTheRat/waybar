@@ -86,6 +86,10 @@ window#waybar {
 #pulseaudio,
 #custom-network,
 #mpris,
+#bluetooth,
+#custom-network-settings,
+#custom-cpu,
+#custom-ram,
 #tray {
     padding: 2px 12px;
     margin: 0 2px;
@@ -94,6 +98,24 @@ window#waybar {
     transition: all 0.2s ease;
 }
 
+#group-network,
+#group-sysinfo {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 2px 10px; 
+    margin: 0 2px;
+    transition: all 0.3s ease;
+}
+
+#group-network:hover,
+#group-sysinfo:hover {
+    background: rgba(255, 255, 255, 0.15);
+    padding-right: 20px;
+}
+
+#custom-network {
+    margin-right: 5px;
+    transition: color 0.3s ease;
+}
 
 #custom-battery {
 	padding: 2px 12px;
@@ -135,39 +157,6 @@ window#waybar {
         background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
     }
 }
-
-/*
-#battery {
-    color: #68d391;
-}
-
-#battery.charging {
-    color: #48bb78;
-    background: rgba(72, 187, 120, 0.15);
-}
-
-#battery.plugged {
-    color: #38b2ac;
-    background: rgba(56, 178, 172, 0.15);
-}
-
-#battery.warning:not(.charging) {
-    color: #f6ad55;
-    background: rgba(246, 173, 85, 0.15);
-}
-
-#battery.critical:not(.charging) {
-    background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);
-    color: #ffffff;
-    animation: battery-blink 0.5s linear infinite alternate;
-}
-
-@keyframes battery-blink {
-    to {
-        background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
-    }
-}*/
-
 
 #tray {
     padding: 2px 10px;

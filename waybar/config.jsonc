@@ -15,11 +15,8 @@
     	"custom/clock",
     ],
     "modules-right": [
-        "custom/network",
-		"custom/sysinfo",
-        "custom/battery",
-        "pulseaudio",
-        "tray"
+        "group/network",
+		"group/sysinfo",
     ],
 
     "sway/workspaces": {
@@ -50,15 +47,35 @@
         "tooltip-format": "{app}: {title}"
     },
 
-    "tray": {
-        "spacing": 10,
-        "icon-size": 17,
-        "show-passive-items": true,
-        "reverse-direction": false,
-        "icons": {
-        	"spotify": " "
-            }
-    	},
+
+    "group/network": {
+        "orientation": "horizontal",
+        "drawer": {
+            "transition-duration": 500,
+            "children-class": "network-drawer-item",
+            "transition-left-to-right": true 
+        },
+        "modules": [
+            "custom/network",             
+            "bluetooth",           
+            "custom/network-settings"
+        ]
+    },
+
+    "group/sysinfo":{
+      "orientation": "horizontal",
+        "drawer": {
+            "transition-duration": 500,
+            "children-class": "sys-drawer-item",
+            "transition-left-to-right": false 
+        },
+        "modules": [
+            "custom/battery",
+            "custom/ram",
+            "custom/cpu",
+            "pulseaudio",
+        ]
+    },
     	
     "custom/clock": {
       "exec": "date '+%H:%M:%S'",
@@ -69,21 +86,9 @@
     	"exec": "date '+%a %d %b'",
     	"interval":3600,
     },
-    
-    "battery": {
-        "states": {
-            "warning": 30,
-            "critical": 15
-        },
-        "format": "{capacity}% {icon}",
-        "format-full": "{capacity}% {icon}",
-        "format-charging": "{capacity}% ",
-        "format-plugged": "{capacity}% ",
-        "format-icons": ["", "", "", "", ""],
-       	"interval": 10
-	},
 
 	"custom/battery": {
+        "format": " {}",
 		"exec": "/home/martin/.config/scripts.rs/target/release/battery",
 		"interval": 1,
 		"on-click": "/home/martin/.config/scripts.rs/target/release/change_battery_mode"
@@ -105,12 +110,6 @@
         "interval":5
     },
 
-    "custom/network": {
-          "exec": "~/.config/scripts.rs/target/release/network_status",
-          "interval": 5,
-          "on-click":  "/home/martin/.config/scripts.rs/target/release/change_network_status"
-	},
-
 	"mpris": {
 	    "player": "spotify",
 	    "format": " {title}",
@@ -122,11 +121,38 @@
 	    "on-scroll-down": "playerctl previous",
 	    "hide-disconnected": true
 	},
-	"custom/sysinfo": {
-	  "exec": "~/.config/scripts.rs/target/release/sysinfo",
-	  "interval": 1,
-	  "on-click": "foot -e btop",
-	  "tooltip": false
-	}
-	
+
+
+
+    "custom/network": {
+          "exec": "~/.config/scripts.rs/target/release/network_status",
+          "interval": 5,
+          "format": "{}  ",
+          "on-click":  "/home/martin/.config/scripts.rs/target/release/change_network_status"
+    },
+
+    "bluetooth": {
+        "format": "",
+        "format-disabled": "",
+        "tooltip-format": "Bluetooth Actif",
+        "tooltip-format-disabled": "Bluetooth Inactif",
+        "on-click": "rfkill toggle bluetooth"
+    },
+
+    "custom/network-settings": {
+        "format": "",
+        "tooltip": "Ouvrir les paramètres réseau",
+        "on-click": "nm-connection-editor" 
+    },
+
+    "custom/ram": {
+      "exec": "~/.config/scripts.rs/target/release/ram",
+      "interval": 1,
+      "tooltip": false
+    },
+    "custom/cpu": {
+      "exec": "~/.config/scripts.rs/target/release/cpu",
+      "interval": 1,
+      "tooltip": false
+    }
 }
