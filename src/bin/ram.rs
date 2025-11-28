@@ -17,7 +17,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
 				let total: f64 = memory[1].parse()?;
 
 				let percent = (used*100.0/total).round() as u32;
-				println!("<span foreground='{}'> MEM {}%</span>", couleur_mem, percent);
+				println!("<span foreground='{}'>MEM {}%</span>", couleur_mem, percent);
 
 			}
 		}

@@ -8,8 +8,8 @@
         "group/sway"
     ],
     "modules-center": [
-        "group/date",
-        "mpris",
+        "group/date",            
+        "custom/clock",
     	"group/clock"
     ],
     "modules-right": [
@@ -109,7 +109,7 @@
         },
         "modules":[
             "custom/right",
-            "custom/clock"
+            "mpris"
         ]
     },
     "custom/clock": {
