@@ -19,7 +19,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
 				let nmcli = String::from_utf8_lossy(&nmcli_output.stdout).trim().to_string();
 				let ssid : Vec<&str> =nmcli.split_terminator(&[':','\n']).collect() ;
 
-				if ssid[2].is_empty() {
+				if ssid[2] == "lo" {
 					println!("<span foreground='#f87171'>⚠ Disconnected</span>");
 				}
 				else {
