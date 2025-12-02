@@ -87,21 +87,22 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
 	if Path::new(&state_file).exists() {
 	        mode = fs::read_to_string(state_file)?.trim().parse::<u8>()?;
 			let _: Result<f64, Box<dyn std::error::Error>> = Ok(mode.into());
-			match mode {
+			if Path::new("/sys/class/power_supply/BAT0").exists() {
+				match mode {
 				1 => {
-				let Ok((battery_percent, battery_state, color)) = show_battery() else { todo!() };
-				if battery_state == "Charging" {
-					println!("<span foreground='{}'>{}% </span>",color, battery_percent);		
-				}
-				else if battery_state == "Not charging" {
-					println!("<span foreground='{}'>{}% </span>",  color, battery_percent)
-				}
-				else if battery_percent > 30 {
-					println!("<span foreground='{}'>{}% {}</span>", color, battery_percent, state[battery_percent/20]);
-				}
-				else {
+					let Ok((battery_percent, battery_state, color)) = show_battery() else { todo!() };
+					if battery_state == "Charging" {
+						println!("<span foreground='{}'>{}% </span>",color, battery_percent);		
+					}
+					else if battery_state == "Not charging" {
+						println!("<span foreground='{}'>{}% </span>",  color, battery_percent)
+					}
+					else if battery_percent > 30 {
 						println!("<span foreground='{}'>{}% {}</span>", color, battery_percent, state[battery_percent/20]);
-					}	
+					}
+					else {
+							println!("<span foreground='{}'>{}% {}</span>", color, battery_percent, state[battery_percent/20]);
+						}	
 				}
 				2 => {
 					let battery_state = Command::new("cat").arg("/sys/class/power_supply/BAT0/status").output()?;
@@ -119,6 +120,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
 					}
 				} 
 				_ => {}
+			}
+		}
+		else {
+			let color = "#40B792";
+			println!("<span foreground='{}'>Batterie sur secteur</span>", color);
 		}
 	} else {
 		println!("Fichier non trouvé : {}", state_file);
