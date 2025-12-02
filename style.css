@@ -81,6 +81,7 @@ window#waybar {
 #pulseaudio,
 #mpris,
 #bluetooth,
+#tray,
 #custom-network-settings,
 #custom-cpu,
 #custom-ram,
@@ -92,6 +93,18 @@ window#waybar {
     transition: all 0.2s ease;
 }
 
+#tray {
+    padding: 2px 10px;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+    background-color: #fc8181;
+}
 
 #group-network,
 #group-sysinfo {
@@ -122,8 +135,6 @@ window#waybar {
 #custom-battery:hover {
     background: rgba(255, 255, 255, 0.15);
 }
-
-
 
 #pulseaudio {
     color: #68d391;

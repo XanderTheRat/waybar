@@ -84,6 +84,7 @@
             "custom/battery",
             "custom/ram",
             "custom/cpu",
+            "tray",
             "pulseaudio",
         ]
     },
@@ -112,6 +113,15 @@
             "mpris"
         ]
     },
+
+	"tray": {
+		"spacing": 10,
+		"icon-size": 17,
+		"show-passive-items": false,
+		"reverse-direction": false,
+		"ignore-list": ["blueman", "nm-applet"]
+	},
+    
     "custom/clock": {
       "exec": "date '+%H:%M:%S'",
       "interval": 1
@@ -182,12 +192,10 @@
 
     "custom/ram": {
       "exec": "~/.config/waybar/scripts/target/release/ram",
-      "interval": 1,
       "tooltip": false
     },
     "custom/cpu": {
       "exec": "~/.config/waybar/scripts/target/release/cpu",
-      "interval": 1,
       "tooltip": false
     },
 
