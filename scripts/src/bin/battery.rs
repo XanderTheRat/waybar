@@ -97,12 +97,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
 					else if battery_state == "Not charging" {
 						println!("<span foreground='{}'>{}% </span>",  color, battery_percent)
 					}
-					else if battery_percent > 30 {
-						println!("<span foreground='{}'>{}% {}</span>", color, battery_percent, state[battery_percent/20]);
+					else if battery_state == "Full" {
+						let color = "#40B792";
+						println!("<span foreground='{}'>Battery full</span>", color);					
 					}
 					else {
-							println!("<span foreground='{}'>{}% {}</span>", color, battery_percent, state[battery_percent/20]);
-						}	
+						println!("<span foreground='{}'>{}% {}</span>", color, battery_percent, state[battery_percent/20]);
+					}	
 				}
 				2 => {
 					let battery_state = Command::new("cat").arg("/sys/class/power_supply/BAT0/status").output()?;
@@ -112,11 +113,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
 					let color:&str;
 					if status == "Charging" || status == "Not charging" {
 						color = "#40B792";
-						println!("<span foreground='{}'>Batterie en chargement</span>", color);
-					}else {
+						println!("<span foreground='{}'>Batterie charging</span>", color);
+					}else if status == "Full" {
+						color = "#40B792";
+						println!("<span foreground='{}'>Battery full</span>", color);					
+					}
+					else {
 						color = "#68d391";
 						let Ok((remaining_hours, remaining_minute)) = show_remaining_time() else { todo!() };
-						println!("<span foreground='{}'>{} heure(s) {} minutes</span>", color,remaining_hours, remaining_minute)
+						println!("<span foreground='{}'>{} hours {} remaining</span>", color,remaining_hours, remaining_minute)
 					}
 				} 
 				_ => {}
