@@ -1,68 +1,84 @@
 use serde::Deserialize;
-use chrono::{DateTime, FixedOffset, Utc};
+use chrono::{DateTime, FixedOffset, Utc, Datelike};
 
 #[derive(Debug, Deserialize)]
 struct ApiOutput {
-	success : bool,
-	data : Data,
+    success : bool,
+    data : Data,
 }
 
 #[derive(Debug, Deserialize)]
 struct Data {
-	group : String,
-	year : String,
-	tp : String,
-	date : String,
-	courses : Vec<Course>,
+    group : String,
+    year : String,
+    tp : String,
+    date : String,
+    courses : Vec<Course>,
 }
 
 #[derive(Debug, Deserialize)]
 struct Course {
-	id : i32,
-	title: String,
-	startTime : String,
-	endTime : String,
-	room : String,
-	teacher : String,
-	r#type : String,
-}
-
-fn format_hours(time : String) -> String {
-    let utc_date: DateTime<Utc> = time.parse().expect("Erreur de parsing");
-    let offset = FixedOffset::east_opt(3600).expect("Erreur d'offset");
-    let date_plus_one = utc_date.with_timezone(&offset);
-    let heure_seule = date_plus_one.format("%H:%M").to_string();
-    heure_seule
+    id : i32,
+    title: String,
+    startTime : String,
+    endTime : String,
+    room : String,
+    teacher : String,
+    r#type : String,
 }
 
 fn main() {
-    let response = reqwest::blocking::get("http://panel.gamo.one:50006/api/v1/schedule?group=G4&tp=A").unwrap();
-    let api_output: ApiOutput = response.json().unwrap();
-    println!("{:?}", api_output);
-    let success = api_output.success;
-    if success {
-    	let data: Data = api_output.data;
-    	let group = data.group;
-    	let year = data.year;
-    	let tp = data.tp;
-    	let date = data.date;
-    	let courses = data.courses;
-    	println!("{}", date);
+    let response = reqwest::blocking::get("http://panel.gamo.one:50006/api/v1/schedule?group=G4&tp=A")
+        .expect("Erreur requête HTTP");
+    let api_output: ApiOutput = response.json().expect("Erreur JSON");
 
-    	for course in &courses {
-    		let start = &course.startTime;
-    		let end = &course.endTime;
-    		let room = &course.room;
-    		let teacher = &course.teacher;
-    		let course_type = &course.r#type;
+    if api_output.success {
+        let data = api_output.data;
+        let mut courses = data.courses;
+        let paris_offset = FixedOffset::east_opt(3600).unwrap();
+        
+        let now_utc = Utc::now();
+        let now_paris = now_utc.with_timezone(&paris_offset);
 
-    		let start_hours = format_hours(start.to_string());
-    		let end_hours = format_hours(end.to_string());
+        let mut course_found = false;
 
-    		let group_format = format!("Vous êtes en {}{}", group, tp);
-    		let class_type_format = format!("{} avec {} en {}", course_type,teacher, room);
-    		let hours_format = format!("Début : {} | Fin : {}", start_hours, end_hours);
-			println!("{} \n{}\n{}\n", group_format, class_type_format, hours_format);
-    	}
+        courses.sort_by(|a, b| a.startTime.cmp(&b.startTime));
+
+
+        for course in &courses {
+            let start_utc: DateTime<Utc> = course.startTime.parse().expect("Erreur date start");
+            let end_utc: DateTime<Utc> = course.endTime.parse().expect("Erreur date end");
+
+            if end_utc > now_utc {
+                
+                let start_paris = start_utc.with_timezone(&paris_offset);
+
+                if start_paris.date_naive() == now_paris.date_naive() {
+                    
+                    let end_paris = end_utc.with_timezone(&paris_offset);
+                    let start_hours = start_paris.format("%H:%M");
+                    let end_hours = end_paris.format("%H:%M");
+                    let group_format = format!("Vous êtes en {}{} - {}", data.group, data.tp, data.year);
+                    let class_type_format = format!("{} avec {} en {}", course.r#type, course.teacher, course.room);
+                    let status_prefix = if start_utc > now_utc {
+                        "Prochain cours"
+                    } else {
+                        "Cours actuel"  
+                    };
+                    let hours_format = format!("{} - Début : {} | Fin : {}", status_prefix, start_hours, end_hours);
+                    
+                    println!("{}\n{}\n{}", group_format, class_type_format, hours_format);
+                    
+                    course_found = true;
+                } else {
+                    println!("Vous n'avez pas cours");
+                    course_found = true; 
+                }
+                break;
+            }
+        }
+        if !course_found {
+            println!("Vous n'avez pas cours");
+        }
     }
 }
