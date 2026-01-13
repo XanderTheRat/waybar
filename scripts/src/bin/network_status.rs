@@ -3,7 +3,7 @@ use std::fs;
 use std::process::Command;
 
 fn main() -> Result<(), Box<dyn std::error::Error>>{
-	let home = env::var("HOME").expect("$HOME not found");
+	let home = env::var("HOME").expect("");
 
 	let modefile = format!("{}/.config/waybar/scripts/network_status", home);
 	let file_exist = fs::exists(&modefile);
@@ -22,7 +22,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
 				let nmcli = String::from_utf8_lossy(&nmcli_output.stdout).trim().to_string();
 				let ssid : Vec<&str> =nmcli.split_terminator(&[':','\n']).collect() ;
 
-				if ssid[2] == "lo" || ssid[2] == ""{
+				if ssid[2] == "lo" || ssid[2].is_empty() {
 					println!("<span foreground='#f87171'>⚠ Disconnected</span>");
 				}
 				else {
@@ -51,7 +51,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
 
 				println!("<span foreground='{}'>ipv{}:</span><span foreground='#63b3ed'> {}</span>",color, status_mode, output_ip[network_mode as usize]);
 			}
-			_ => todo!()
+			_ => ()
 		}
 	}
 	else {
