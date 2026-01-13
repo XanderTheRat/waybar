@@ -41,32 +41,20 @@ fn main() {
         let mut course_found = false;
 
         courses.sort_by(|a, b| a.startTime.cmp(&b.startTime));
-
+        
         for course in &courses {
-            let start_utc: DateTime<Utc> = course.startTime.parse().expect("Erreur date start");
             let end_utc: DateTime<Utc> = course.endTime.parse().expect("Erreur date end");
 
             if end_utc > now_utc {
-                let start_paris = start_utc.with_timezone(&paris_offset);
-                if start_paris.date_naive() == now_paris.date_naive() {
-                    let end_paris = end_utc.with_timezone(&paris_offset);
-                    let start_hours = start_paris.format("%H:%M");
-                    let end_hours = end_paris.format("%H:%M");
-                    let status_prefix = if start_utc > now_utc {
-                        "Prochain cours"
-                    } else {
-                        "Cours actuel"  
-                    };
-                    let hours_format = format!("{} : {} - {}", status_prefix, start_hours, end_hours);                    
-                    println!("{}", hours_format);                    
-                    course_found = true;
-                } else {
-                    println!("Vous n'avez pas cours");
-                    course_found = true; 
+                let class_type_format = format!("{} avec {} en {}", course.r#type, course.teacher, course.room);                    
+                println!("{}", class_type_format);                    
+                course_found = true;
+            } else {
+                println!("Vous n'avez pas cours");
+                course_found = true; 
                 }
                 break;
             }
-        }
         if !course_found {
             println!("Vous n'avez pas cours");
         }
