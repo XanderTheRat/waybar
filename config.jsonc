@@ -13,8 +13,9 @@
     	"group/clock"
     ],
     "modules-right": [
+        "group/iut",
         "group/network",
-		"group/sysinfo",
+		"group/sysinfo"
     ],
 
     "sway/workspaces": {
@@ -113,6 +114,19 @@
             "mpris"
         ]
     },
+    "group/iut": {
+        "orientation": "horizontal",
+        "drawer": {
+            "transition-duration": 500,
+            "children-class": "sway-drawer-item",
+            "transition-left-to-right": true
+        },
+        "modules":[
+            "custom/room",
+            "custom/edt",
+            "custom/group"
+        ]
+    },
 
 	"tray": {
 		"spacing": 10,
@@ -125,6 +139,7 @@
     "custom/clock": {
       "exec": "date '+%H:%M:%S'",
       "interval": 1
+      
     },
 
     "custom/date": {
@@ -138,6 +153,22 @@
 		"interval": 1,
 		"on-click": "~/.config/waybar/scripts/target/release/change_battery_mode"
 	},
+
+    "custom/room": {
+        "format": " {}",
+        "exec": "~/.config/waybar/scripts/target/release/room",
+        "interval": 1800
+    },
+    "custom/edt": {
+        "format": "{}",
+        "exec": "~/.config/waybar/scripts/target/release/edt",
+        "interval": 1800
+    },
+    "custom/group": {
+        "format": "{} ",
+        "exec": "~/.config/waybar/scripts/target/release/group",
+        "interval": 36000
+    },
 
     "pulseaudio": {
         "format": "{icon} {volume}%",

@@ -40,6 +40,9 @@ fn main() {
         let now_paris = now_utc.with_timezone(&paris_offset);
         let mut course_found = false;
 
+        let edt_color = "#E06C75";
+        let no_course_color = "#98C379";
+
         courses.sort_by(|a, b| a.startTime.cmp(&b.startTime));
 
         for course in &courses {
@@ -58,17 +61,17 @@ fn main() {
                         "Cours actuel"  
                     };
                     let hours_format = format!("{} : {} - {}", status_prefix, start_hours, end_hours);                    
-                    println!("{}", hours_format);                    
+                    println!("<span foreground='{}'>{}</span>",edt_color ,hours_format);                    
                     course_found = true;
                 } else {
-                    println!("Vous n'avez pas cours");
+                    println!("<span foreground='{}'>Vous n'avez pas cours</span>", no_course_color);
                     course_found = true; 
                 }
                 break;
             }
         }
         if !course_found {
-            println!("Vous n'avez pas cours");
+            println!("<span foreground='{}'>Vous n'avez pas cours</span>", no_course_color);
         }
     }
 }

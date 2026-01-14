@@ -37,26 +37,27 @@ fn main() {
         let mut courses = data.courses;
         let paris_offset = FixedOffset::east_opt(3600).unwrap();
         let now_utc = Utc::now();
-        let now_paris = now_utc.with_timezone(&paris_offset);
         let mut course_found = false;
+        let class_color = "#F38BA8";
+        let no_course_color = "#A6E3A1";
 
         courses.sort_by(|a, b| a.startTime.cmp(&b.startTime));
         
         for course in &courses {
-            let end_utc: DateTime<Utc> = course.endTime.parse().expect("Erreur date end");
+            let end_utc: DateTime<Utc> = course.endTime.parse().expect("");
 
             if end_utc > now_utc {
-                let class_type_format = format!("{} avec {} en {}", course.r#type, course.teacher, course.room);                    
+                let class_type_format = format!("<span foreground='{}'>{} avec {} en {}</span>",class_color ,course.r#type, course.teacher, course.room);                    
                 println!("{}", class_type_format);                    
                 course_found = true;
             } else {
-                println!("Vous n'avez pas cours");
+                println!("<span foreground='{}'>Vous n'avez pas cours</span>", no_course_color);
                 course_found = true; 
                 }
                 break;
             }
         if !course_found {
-            println!("Vous n'avez pas cours");
+            println!("<span foreground='{}'>Vous n'avez pas cours</span>",no_course_color);
         }
     }
 }

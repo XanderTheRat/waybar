@@ -31,10 +31,11 @@ fn main() {
     let response = reqwest::blocking::get("http://panel.gamo.one:50006/api/v1/schedule?group=G4&tp=A")
         .expect("Erreur requête HTTP");
     let api_output: ApiOutput = response.json().expect("Erreur JSON");
+    let group_color = "#BF616A";
 
     if api_output.success {
         let data = api_output.data;
         let group_format = format!("{}{} - {}", data.group, data.tp, data.year);                    
-        println!("{}", group_format);
+        println!("<span foreground='{}'>{}</span>",group_color ,group_format);
     }
 }

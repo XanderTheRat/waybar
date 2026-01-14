@@ -85,6 +85,9 @@ window#waybar {
 #custom-network-settings,
 #custom-cpu,
 #custom-ram,
+#custom-edt,
+#custom-room,
+#custom-group,
 #custom-right, #custom-left {
     padding: 2px 12px;
     margin: 0 2px;
