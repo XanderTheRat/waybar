@@ -28,7 +28,7 @@ struct Course {
 }
 
 fn main() {
-    let response = reqwest::blocking::get("http://panel.gamo.one:50006/api/v1/schedule?group=G4&tp=A")
+    let response = reqwest::blocking::get("https://iut-room-viewer.gamo.one/api/v1/schedule?group=G4&tp=A")
         .expect("Erreur requête HTTP");
     let api_output: ApiOutput = response.json().expect("Erreur JSON");
 

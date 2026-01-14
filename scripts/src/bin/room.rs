@@ -28,36 +28,38 @@ struct Course {
 }
 
 fn main() {
-    let response = reqwest::blocking::get("http://panel.gamo.one:50006/api/v1/schedule?group=G4&tp=A")
+    let response = reqwest::blocking::get("https://iut-room-viewer.gamo.one/api/v1/schedule?group=G4&tp=A")
         .expect("Erreur requête HTTP");
     let api_output: ApiOutput = response.json().expect("Erreur JSON");
 
     if api_output.success {
         let data = api_output.data;
         let mut courses = data.courses;
-        let paris_offset = FixedOffset::east_opt(3600).unwrap();
         let now_utc = Utc::now();
         let mut course_found = false;
         let class_color = "#F38BA8";
         let no_course_color = "#A6E3A1";
+        let paris_offset = FixedOffset::east_opt(3600).unwrap();
+        let now_paris = now_utc.with_timezone(&paris_offset);
 
         courses.sort_by(|a, b| a.startTime.cmp(&b.startTime));
         
         for course in &courses {
-            let end_utc: DateTime<Utc> = course.endTime.parse().expect("");
+            let start_utc: DateTime<Utc> = course.startTime.parse().expect("Erreur date start");
+            let end_utc: DateTime<Utc> = course.endTime.parse().expect("Erreur date end");
 
             if end_utc > now_utc {
-                let class_type_format = format!("<span foreground='{}'>{} avec {} en {}</span>",class_color ,course.r#type, course.teacher, course.room);                    
-                println!("{}", class_type_format);                    
-                course_found = true;
-            } else {
-                println!("<span foreground='{}'>Vous n'avez pas cours</span>", no_course_color);
-                course_found = true; 
+                let start_paris = start_utc.with_timezone(&paris_offset);
+                if start_paris.date_naive() == now_paris.date_naive() {                   
+                    let class_type_format = format!("<span foreground='{}'>{} avec {} en {}</span>",class_color ,course.r#type, course.teacher, course.room);                    
+                    println!("{}", class_type_format);                    
+                    course_found = true;
                 }
                 break;
             }
+        }
         if !course_found {
-            println!("<span foreground='{}'>Vous n'avez pas cours</span>",no_course_color);
+            println!("<span foreground='{}'>Vous n'avez pas cours</span>", no_course_color);
         }
     }
 }
