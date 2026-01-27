@@ -28,7 +28,9 @@ struct Course {
 }
 
 fn main() {
-    let response = reqwest::blocking::get("https://iut-room-viewer.gamo.one/api/v1/schedule?group=G4&tp=A")
+    let td_group="G4";
+    let tp_group="A";
+    let response = reqwest::blocking::get(format!("https://iut-room-viewer.gamo.one/api/v1/schedule?group={}&tp={}", td_group, tp_group))
         .expect("Erreur requête HTTP");
     let api_output: ApiOutput = response.json().expect("Erreur JSON");
 
@@ -59,7 +61,7 @@ fn main() {
             }
         }
         if !course_found {
-            println!("<span foreground='{}'>Vous n'avez pas cours</span>", no_course_color);
+            println!("<span foreground='{}'>Aucun cours</span>", no_course_color);
         }
     }
 }

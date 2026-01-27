@@ -28,7 +28,9 @@ struct Course {
 }
 
 fn main() {
-    let response = reqwest::blocking::get("https://iut-room-viewer.gamo.one/api/v1/schedule?group=G4&tp=A")
+    let td_group="G4";
+    let tp_group="A";
+    let response = reqwest::blocking::get(format!("https://iut-room-viewer.gamo.one/api/v1/schedule?group={}&tp={}", td_group, tp_group))
         .expect("Erreur requête HTTP");
     let api_output: ApiOutput = response.json().expect("Erreur JSON");
 
@@ -55,23 +57,29 @@ fn main() {
                     let end_paris = end_utc.with_timezone(&paris_offset);
                     let start_hours = start_paris.format("%H:%M");
                     let end_hours = end_paris.format("%H:%M");
+                    let next = "A suivre";
+                    let actual = "Fin";
                     let status_prefix = if start_utc > now_utc {
-                        "Prochain cours"
+                        next
                     } else {
-                        "Cours actuel"  
+                        actual 
                     };
-                    let hours_format = format!("{} : {} - {}", status_prefix, start_hours, end_hours);                    
+                    let hours_format = if status_prefix == next {
+                        format!("{} : {} - {}", status_prefix, start_hours, end_hours)
+                    } else {
+                        format!("{} : {}", status_prefix, end_hours)
+                    };                    
                     println!("<span foreground='{}'>{}</span>",edt_color ,hours_format);                    
                     course_found = true;
                 } else {
-                    println!("<span foreground='{}'>Vous n'avez pas cours</span>", no_course_color);
+                    println!("<span foreground='{}'>Aucun cours</span>", no_course_color);
                     course_found = true; 
                 }
                 break;
             }
         }
         if !course_found {
-            println!("<span foreground='{}'>Vous n'avez pas cours</span>", no_course_color);
+            println!("<span foreground='{}'>Aucun cours</span>", no_course_color);
         }
     }
 }
