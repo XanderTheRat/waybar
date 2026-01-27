@@ -157,7 +157,7 @@
     "custom/room": {
         "format": " {}",
         "exec": "~/.config/waybar/scripts/target/release/room",
-        "interval": 1800
+        "interval": 30
     },
     "custom/edt": {
         "format": "{}",
