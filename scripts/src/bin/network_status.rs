@@ -26,7 +26,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
 					println!("<span foreground='#f87171'>⚠ Disconnected</span>");
 				}
 				else {
-					println!("<span foreground='#63b3ed'> {}</span>", ssid[2]);
+					println!("<span foreground='#689f38'> {}</span>", ssid[2]);
 				}
 
 			},
@@ -49,7 +49,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
 					status_mode = 6;
 				}
 
-				println!("<span foreground='{}'>ipv{}:</span><span foreground='#63b3ed'> {}</span>",color, status_mode, output_ip[network_mode as usize]);
+				println!("<span foreground='{}'>ipv{}:</span><span foreground='#689f38'> {}</span>",color, status_mode, output_ip[network_mode as usize]);
 			}
 			_ => ()
 		}
