@@ -2,6 +2,8 @@ use std::env;
 use std::path::Path;
 use std::fs;
 
+// Error au changement de mode, à régler
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
 	let home = env::var("HOME").expect("$HOME not found");
 

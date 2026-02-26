@@ -81,7 +81,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
 
 	let home = env::var("HOME").expect("$HOME not found");
 	
-	let state_file = format!("{}/.config/waybar/scripts/network_status", home);
+	let state_file = format!("{}/.config/waybar/scripts/battery_state", home);
 	let mode;
 
 	if Path::new(&state_file).exists() {
