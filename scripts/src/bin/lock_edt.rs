@@ -105,12 +105,12 @@ fn generate_svg(
         24
     };
 
-    // position widget edt
-    let card_x = 90;
-    let card_y = 740;
+    // position widget edt (centre aligne a droite sur l'horloge a x=1275)
     let card_width = 580;
     let card_height = 210;
-    let card_cx = card_x + card_width / 2;
+    let card_cx = 1275;
+    let card_x = card_cx - card_width / 2;
+    let card_y = 175;
 
     let badge_width = (esc_badge.chars().count() * 8 + 36).max(120);
     let badge_x = card_cx - (badge_width as i32 / 2);
@@ -340,9 +340,9 @@ pub fn lock_now() {
         .arg("--indicator-thickness")
         .arg("6")
         .arg("--indicator-x-position")
-        .arg("1275")
+        .arg("960")
         .arg("--indicator-y-position")
-        .arg("445")
+        .arg("540")
         .arg("--timestr")
         .arg("%H:%M:%S")
         .arg("--datestr")
