@@ -1,15 +1,16 @@
 use chrono::{DateTime, Local, Utc};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
+use std::path::PathBuf;
 
 // Rep API
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ApiResponse {
     pub success: bool,
     pub data: ScheduleData,
 }
 
 // Donnees
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ScheduleData {
     pub group: String,
     pub year: String,
@@ -63,7 +64,7 @@ impl ScheduleData {
     }
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Course {
     pub id: i32,
     #[serde(default)]
@@ -94,6 +95,21 @@ impl Course {
 
     pub fn end_local(&self) -> Result<DateTime<Local>, chrono::ParseError> {
         self.end_utc().map(|utc| utc.with_timezone(&Local))
+    }
+
+    pub fn duration_formatted(&self) -> String {
+        if let (Ok(start), Ok(end)) = (self.start_utc(), self.end_utc()) {
+            let total_minutes = (end - start).num_minutes();
+            let hours = total_minutes / 60;
+            let mins = total_minutes % 60;
+            if mins == 0 {
+                format!("{}h00", hours)
+            } else {
+                format!("{}h{:02}", hours, mins)
+            }
+        } else {
+            "0h00".to_string()
+        }
     }
 
     pub fn format_room_info(&self, color: &str) -> String {
@@ -142,18 +158,72 @@ impl Edt {
         Self::new(Self::DEFAULT_TD_GROUP, Self::DEFAULT_TP_GROUP)
     }
 
+    pub fn cache_path(&self) -> PathBuf {
+        let base_dir = std::env::var("XDG_CACHE_HOME")
+            .map(PathBuf::from)
+            .unwrap_or_else(|_| {
+                let home = std::env::var("HOME").unwrap_or_else(|_| "/tmp".to_string());
+                PathBuf::from(home).join(".cache")
+            })
+            .join("waybar_edt");
+        let _ = std::fs::create_dir_all(&base_dir);
+        base_dir.join(format!("edt_{}_{}.json", self.td_group, self.tp_group))
+    }
+
+    pub fn save_cache(&self, data: &ScheduleData) {
+        if let Ok(json) = serde_json::to_string(data) {
+            let _ = std::fs::write(self.cache_path(), json);
+        }
+    }
+
+    pub fn load_cache(&self) -> Option<ScheduleData> {
+        let content = std::fs::read_to_string(self.cache_path()).ok()?;
+        serde_json::from_str(&content).ok()
+    }
+
     pub fn fetch(&self) -> Result<ScheduleData, Box<dyn std::error::Error>> {
+        self.fetch_with_timeout(std::time::Duration::from_secs(5))
+    }
+
+    pub fn fetch_with_timeout(&self, timeout: std::time::Duration) -> Result<ScheduleData, Box<dyn std::error::Error>> {
         let url = format!(
             "https://iut-room-viewer.gamo.one/api/v1/schedule?group={}&tp={}",
             self.td_group, self.tp_group
         );
-        let response = reqwest::blocking::get(&url)?;
+        let client = reqwest::blocking::Client::builder()
+            .timeout(timeout)
+            .build()?;
+        let response = client.get(&url).send()?;
         let api_output: ApiResponse = response.json()?;
 
         if api_output.success {
+            self.save_cache(&api_output.data);
             Ok(api_output.data)
         } else {
             Err("Échec de la réponse de l'API (success = false)".into())
+        }
+    }
+
+    pub fn fetch_or_cached(&self, max_cache_age: std::time::Duration) -> Result<ScheduleData, Box<dyn std::error::Error>> {
+        if let Ok(metadata) = std::fs::metadata(self.cache_path()) {
+            if let Ok(modified) = metadata.modified() {
+                if modified.elapsed().unwrap_or_default() < max_cache_age {
+                    if let Some(cached) = self.load_cache() {
+                        return Ok(cached);
+                    }
+                }
+            }
+        }
+
+        match self.fetch_with_timeout(std::time::Duration::from_millis(2000)) {
+            Ok(data) => Ok(data),
+            Err(e) => {
+                if let Some(cached) = self.load_cache() {
+                    Ok(cached)
+                } else {
+                    Err(e)
+                }
+            }
         }
     }
 }
