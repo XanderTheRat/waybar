@@ -28,8 +28,8 @@ struct Course {
 }
 
 fn main() {
-    let td_group="G4";
-    let tp_group="A";
+    let td_group="G7";
+    let tp_group="B";
     let response = reqwest::blocking::get(format!("https://iut-room-viewer.gamo.one/api/v1/schedule?group={}&tp={}", td_group, tp_group))
         .expect("Erreur requête HTTP");
     let api_output: ApiOutput = response.json().expect("Erreur JSON");
@@ -37,7 +37,7 @@ fn main() {
     if api_output.success {
         let data = api_output.data;
         let mut courses = data.courses;
-        let paris_offset = FixedOffset::east_opt(3600).unwrap();
+        let paris_offset = FixedOffset::east_opt(7200).unwrap(); //Mettre 3600 pour heure hiver
         let now_utc = Utc::now();
         let now_paris = now_utc.with_timezone(&paris_offset);
         let mut course_found = false;

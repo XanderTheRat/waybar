@@ -28,8 +28,8 @@ struct Course {
 }
 
 fn main() {
-    let td_group="G4";
-    let tp_group="A";
+    let td_group="G7";
+    let tp_group="B";
     let response = reqwest::blocking::get(format!("https://iut-room-viewer.gamo.one/api/v1/schedule?group={}&tp={}", td_group, tp_group))
         .expect("Erreur requête HTTP");
     let api_output: ApiOutput = response.json().expect("Erreur JSON");
