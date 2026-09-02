@@ -1,4 +1,4 @@
-use chrono::{Local, Utc};
+use chrono::Utc;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -120,11 +120,6 @@ fn generate_svg(
     let sep_x2 = card_x + card_width - 35;
     let sep_y = card_y + 148;
 
-    // position widget heure
-    let current_time = Local::now().format("%H:%M").to_string();
-    let clock_x = 1275;
-    let clock_y = 445;
-
     format!(
         r###"<svg width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -135,15 +130,7 @@ fn generate_svg(
     <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="130%">
       <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#000000" flood-opacity="0.6"/>
     </filter>
-    <filter id="textGlow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="#000000" flood-opacity="0.75"/>
-    </filter>
   </defs>
-
-  <!-- heure -->
-  <text filter="url(#textGlow)" x="{clock_x}" y="{clock_y}" font-family="Noto Sans, sans-serif" font-size="58" font-weight="700" fill="#FFFFFF" text-anchor="middle" letter-spacing="2">
-    {current_time}
-  </text>
 
   <!-- edt -->
   <g filter="url(#cardShadow)">
@@ -199,9 +186,6 @@ fn generate_svg(
         sep_x2 = sep_x2,
         sep_y = sep_y,
         group_y = card_y + 180,
-        clock_x = clock_x,
-        clock_y = clock_y,
-        current_time = current_time,
         esc_badge = esc_badge,
         esc_title1 = esc_title1,
         esc_title2 = esc_title2,
@@ -328,11 +312,9 @@ pub fn lock_now() {
         if is_recent {
             final_output_path
         } else {
-            // Si l'image a plus de 3 minutes (daemon arrêté), on rafraîchit immédiatement
             render_lock_screen()
         }
     } else {
-        // Si l'image n'existe pas encore (1er lancement), on la génère
         let generated = render_lock_screen();
         if Path::new(&generated).exists() {
             generated
@@ -341,11 +323,58 @@ pub fn lock_now() {
         }
     };
 
-    // Lancement instantané de swaylock
-    let _ = Command::new("swaylock")
+    let swaylock_bin = if Path::new("/home/martin/.local/bin/swaylock").exists() {
+        "/home/martin/.local/bin/swaylock"
+    } else {
+        "swaylock"
+    };
+
+    let _ = Command::new(swaylock_bin)
         .arg("-f")
         .arg("-i")
         .arg(&image_to_lock)
+        .arg("--clock")
+        .arg("--indicator")
+        .arg("--indicator-radius")
+        .arg("120")
+        .arg("--indicator-thickness")
+        .arg("6")
+        .arg("--indicator-x-position")
+        .arg("1275")
+        .arg("--indicator-y-position")
+        .arg("445")
+        .arg("--timestr")
+        .arg("%H:%M:%S")
+        .arg("--datestr")
+        .arg("%a %d %b")
+        .arg("--font")
+        .arg("Noto Sans")
+        .arg("--inside-color")
+        .arg("0d1b2acc")
+        .arg("--ring-color")
+        .arg("38bdf855")
+        .arg("--key-hl-color")
+        .arg("38bdf8")
+        .arg("--bs-hl-color")
+        .arg("f472b6")
+        .arg("--line-color")
+        .arg("00000000")
+        .arg("--separator-color")
+        .arg("00000000")
+        .arg("--text-color")
+        .arg("ffffff")
+        .arg("--text-clear-color")
+        .arg("ffffff")
+        .arg("--text-ver-color")
+        .arg("38bdf8")
+        .arg("--text-wrong-color")
+        .arg("f87171")
+        .arg("--ring-ver-color")
+        .arg("38bdf8")
+        .arg("--ring-wrong-color")
+        .arg("f87171")
+        .arg("--ring-clear-color")
+        .arg("a78bfa")
         .status();
 }
 
@@ -353,7 +382,6 @@ pub fn run_daemon() {
     let runtime_dir = std::env::var("XDG_RUNTIME_DIR").unwrap_or_else(|_| "/tmp".to_string());
     let pid_file = format!("{}/lock_edt_daemon.pid", runtime_dir);
 
-    // Tuer l'ancienne instance si présente
     if let Ok(old_pid_str) = fs::read_to_string(&pid_file) {
         if let Ok(old_pid) = old_pid_str.trim().parse::<i32>() {
             let current_pid = std::process::id() as i32;
@@ -366,11 +394,10 @@ pub fn run_daemon() {
 
     println!("[lock_edt] Démarrage du daemon de pré-génération du lockscreen (PID {})...", std::process::id());
     
-    // Génération initiale
     render_lock_screen();
 
     loop {
-        thread::sleep(Duration::from_secs(5));
+        thread::sleep(Duration::from_secs(30));
         render_lock_screen();
     }
 }
