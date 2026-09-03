@@ -48,7 +48,7 @@ impl LockImageGenerator {
 
     pub fn find_wallpaper() -> PathBuf {
         let home = std::env::var("HOME").unwrap_or_else(|_| "/home/martin".to_string());
-        let candidates = ["outerwilds2.jpg", "outerwilds1.jpg", "outerwilds3.jpg"];
+        let candidates = ["outerwilds2.jpg", "outerwilds1.jpg"];
         for candidate in candidates {
             let p = PathBuf::from(&home).join("wallpaper").join(candidate);
             if p.exists() {

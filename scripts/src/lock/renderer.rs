@@ -76,13 +76,13 @@ impl SvgCardRenderer {
 
   <!-- edt -->
   <g filter="url(#cardShadow)">
-    <rect x="{card_x}" y="{card_y}" width="{card_width}" height="{card_height}" rx="20" ry="20"
+    <rect x="{card_x}" y="{card_y}" width="{card_width}" height="{card_height}" rx="5" ry="5"
           fill="url(#edtCardGrad)"
           stroke="{card_border}"
           stroke-width="1.5" />
   </g>
 
-  <rect x="{badge_x}" y="{badge_y}" width="{badge_width}" height="24" rx="12" ry="12"
+  <rect x="{badge_x}" y="{badge_y}" width="{badge_width}" height="24" rx="5" ry="5"
         fill="{badge_bg}"
         stroke="{badge_border}"
         stroke-width="1" />
