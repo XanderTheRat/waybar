@@ -82,7 +82,7 @@ impl SvgCardRenderer {
           stroke-width="1.5" />
   </g>
 
-  <rect x="{badge_x}" y="{badge_y}" width="{badge_width}" height="24" rx="5" ry="5"
+  <rect x="{badge_x}" y="{badge_y}" width="{badge_width}" height="24" rx="15" ry="15"
         fill="{badge_bg}"
         stroke="{badge_border}"
         stroke-width="1" />

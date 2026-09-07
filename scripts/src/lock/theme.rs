@@ -15,7 +15,7 @@ impl ColorTheme {
             Self {
                 card_bg_start: "#231e0f",
                 card_bg_end: "#362c12",
-                card_border: "rgba(251, 191, 36, 0.45)",
+                card_border: "#fff",
                 badge_bg: "rgba(245, 158, 11, 0.22)",
                 badge_border: "rgba(245, 158, 11, 0.55)",
                 badge_color: "#FBBF24",
