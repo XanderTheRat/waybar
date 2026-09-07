@@ -3,6 +3,28 @@ use std::process::Command;
 use std::fs;
 use std::path::Path;
 
+fn save_battery_color_binary(color_hex: &str) {
+	let hex = color_hex.trim_start_matches('#');
+	if hex.len() != 6 {
+		return;
+	}
+	if let (Ok(r), Ok(g), Ok(b)) = (
+		u8::from_str_radix(&hex[0..2], 16),
+		u8::from_str_radix(&hex[2..4], 16),
+		u8::from_str_radix(&hex[4..6], 16),
+	) {
+		let bytes = [r, g, b];
+		if let Ok(home) = env::var("HOME") {
+			let path = format!("{}/.config/waybar/scripts/battery_color.bin", home);
+			let _ = fs::write(path, bytes);
+		}
+		if let Ok(runtime_dir) = env::var("XDG_RUNTIME_DIR") {
+			let path = format!("{}/battery_color.bin", runtime_dir);
+			let _ = fs::write(path, bytes);
+		}
+	}
+}
+
 fn main() -> Result<(), Box<dyn std::error::Error>>{
 	let state = ["", "", "", "", ""];
     fn show_battery() -> Result<(usize, String, &'static str), Box<dyn std::error::Error>>{
@@ -10,6 +32,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
 		let color_charging = "#48bb78";
 		let color_plugged = "#38b2ac";
 		let color_low_battery = "#f6ad55";
+		let color_full = "#40B792";
 
 		let warning_state = 30;
 		let critical_state = 15;
@@ -31,6 +54,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
 		else if battery_state == "Not charging" {
 			color = color_plugged;
 		}
+		else if battery_state == "Full" {
+			color = color_full;
+		}
 		else if battery_percent > warning_state {
 				color = color_battery;
 		}
@@ -38,8 +64,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
 			color = color_low_battery;
 		}
 		else {
-			color = "#FFFFFF"
+			color = "#FFFFFF";
 		}
+		save_battery_color_binary(color);
 		Ok((battery_percent, battery_state, color))							
 	}
 
@@ -65,6 +92,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
 
 	    let remaining_hours:f64;
 	    // TODO : fix the output of time
+	    // Using calc of battery_state(n-1) - battery_state(n) for aproximating time
 
 		if battery_state == "Charging" || battery_state == "Not Charging" {
         	remaining_hours=(total_battery_capacity - remaining_power) / used_battery;
@@ -102,10 +130,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
 						println!("<span foreground='{}'>Battery full</span>", color);					
 					}
 					else {
-						println!("<span foreground='{}'>{}% {}</span>", color, battery_percent, state[battery_percent/20]);
+						println!("<span foreground='{}'>{}% {}</span>", color, battery_percent, state[(battery_percent/20).min(4)]);
 					}	
 				}
 				2 => {
+					let _ = show_battery();
 					let battery_state = Command::new("cat").arg("/sys/class/power_supply/BAT0/status").output()?;
 					let battery_state_not_trim = String::from_utf8_lossy(&battery_state.stdout);
 					let status = battery_state_not_trim.trim().to_string();
@@ -129,6 +158,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
 		}
 		else {
 			let color = "#40B792";
+			save_battery_color_binary(color);
 			println!("<span foreground='{}'>Batterie sur secteur</span>", color);
 		}
 	} else {
