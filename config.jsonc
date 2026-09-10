@@ -208,7 +208,7 @@
           "on-click":  "~/.config/waybar/scripts/target/release/change_network_status"
     },
     "custom/ping": {
-        "exec": "if [ ! -f /tmp/waybar_ping_disabled ]; then ping -c 1 8.8.8.8 | head -n 2 | tail -n 1 | tail -c 10 | cut -d '=' -f 2; else echo 'ping'; fi",
+        "exec": "if [ ! -f /tmp/waybar_ping_disabled ]; then ping -c 1 fedoraproject.org | head -n 2 | tail -n 1 | tail -c 10 | cut -d '=' -f 2; else echo 'ping'; fi",
         "interval": 1,
         "format": "{}",
         "on-click": "rm /tmp/waybar_ping_disabled 2>/dev/null || touch /tmp/waybar_ping_disabled"
