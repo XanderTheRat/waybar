@@ -13,26 +13,43 @@ pub struct SvgCardRenderer {
     pub top_y: i32,
     pub width: i32,
     pub height: i32,
+    pub title_color: String,
+    pub time_color: String,
+    pub group_color: String,
+    pub sep_color: String,
+    pub shadow_color: String,
 }
 
 impl Default for SvgCardRenderer {
     fn default() -> Self {
+        let colors = crate::Colors::load();
         Self {
             center_x: 1275,
             top_y: 175,
             width: 580,
             height: 210,
+            title_color: colors.get("lock_card_title"),
+            time_color: colors.get("lock_card_time"),
+            group_color: colors.get("lock_card_group"),
+            sep_color: colors.get("lock_card_separator"),
+            shadow_color: colors.get("lock_card_shadow"),
         }
     }
 }
 
 impl SvgCardRenderer {
     pub fn new(center_x: i32, top_y: i32, width: i32, height: i32) -> Self {
+        let colors = crate::Colors::load();
         Self {
             center_x,
             top_y,
             width,
             height,
+            title_color: colors.get("lock_card_title"),
+            time_color: colors.get("lock_card_time"),
+            group_color: colors.get("lock_card_group"),
+            sep_color: colors.get("lock_card_separator"),
+            shadow_color: colors.get("lock_card_shadow"),
         }
     }
 
@@ -70,7 +87,7 @@ impl SvgCardRenderer {
       <stop offset="100%" stop-color="{card_bg_end}" stop-opacity="0.65"/>
     </linearGradient>
     <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="130%">
-      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#000000" flood-opacity="0.6"/>
+      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="{shadow_color}" flood-opacity="0.6"/>
     </filter>
   </defs>
 
@@ -91,18 +108,18 @@ impl SvgCardRenderer {
   </text>
 
   <!-- prochn crs -->
-  <text x="{card_cx}" y="{title1_y}" font-family="Noto Sans, sans-serif" font-size="{title1_font_size}" font-weight="700" fill="#FFFFFF" text-anchor="middle">
+  <text x="{card_cx}" y="{title1_y}" font-family="Noto Sans, sans-serif" font-size="{title1_font_size}" font-weight="700" fill="{title_color}" text-anchor="middle">
     {esc_title}
   </text>
 
   <!-- horaires -->
-  <text x="{card_cx}" y="{title2_y}" font-family="Noto Sans, sans-serif" font-size="16" font-weight="500" fill="#E2E8F0" text-anchor="middle">
+  <text x="{card_cx}" y="{title2_y}" font-family="Noto Sans, sans-serif" font-size="16" font-weight="500" fill="{time_color}" text-anchor="middle">
     {esc_time}
   </text>
 
-  <line x1="{sep_x1}" y1="{sep_y}" x2="{sep_x2}" y2="{sep_y}" stroke="rgba(255, 255, 255, 0.12)" stroke-width="1" />
+  <line x1="{sep_x1}" y1="{sep_y}" x2="{sep_x2}" y2="{sep_y}" stroke="{sep_color}" stroke-width="1" />
 
-  <text x="{card_cx}" y="{group_y}" font-family="Noto Sans, sans-serif" font-size="13" font-weight="400" fill="#94A3B8" text-anchor="middle" letter-spacing="0.5">
+  <text x="{card_cx}" y="{group_y}" font-family="Noto Sans, sans-serif" font-size="13" font-weight="400" fill="{group_color}" text-anchor="middle" letter-spacing="0.5">
     {esc_group}
   </text>
 </svg>"###,
@@ -112,6 +129,11 @@ impl SvgCardRenderer {
             badge_bg = content.theme.badge_bg,
             badge_border = content.theme.badge_border,
             badge_color = content.theme.badge_color,
+            shadow_color = self.shadow_color,
+            title_color = self.title_color,
+            time_color = self.time_color,
+            sep_color = self.sep_color,
+            group_color = self.group_color,
             card_x = card_x,
             card_y = card_y,
             card_width = self.width,

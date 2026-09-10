@@ -3,37 +3,17 @@ use std::process::Command;
 use std::fs;
 use std::path::Path;
 
-fn save_battery_color_binary(color_hex: &str) {
-	let hex = color_hex.trim_start_matches('#');
-	if hex.len() != 6 {
-		return;
-	}
-	if let (Ok(r), Ok(g), Ok(b)) = (
-		u8::from_str_radix(&hex[0..2], 16),
-		u8::from_str_radix(&hex[2..4], 16),
-		u8::from_str_radix(&hex[4..6], 16),
-	) {
-		let bytes = [r, g, b];
-		if let Ok(home) = env::var("HOME") {
-			let path = format!("{}/.config/waybar/scripts/battery_color.bin", home);
-			let _ = fs::write(path, bytes);
-		}
-		if let Ok(runtime_dir) = env::var("XDG_RUNTIME_DIR") {
-			let path = format!("{}/battery_color.bin", runtime_dir);
-			let _ = fs::write(path, bytes);
-		}
-	}
-}
-
 fn main() -> Result<(), Box<dyn std::error::Error>>{
-	let state = ["", "", "", "", ""];
-    fn show_battery() -> Result<(usize, String, &'static str), Box<dyn std::error::Error>>{
-		let color_battery = "#68d391";
-		let color_charging = "#48bb78";
-		let color_plugged = "#38b2ac";
-		let color_low_battery = "#f6ad55";
-		let color_full = "#40B792";
+	let colors = waybar::Colors::load();
+	let color_battery = colors.get("color_battery");
+	let color_charging = colors.get("color_charging");
+	let color_plugged = colors.get("color_plugged");
+	let color_low_battery = colors.get("color_low_battery");
+	let color_full = colors.get("color_full");
+	let color_critical = colors.get("color_critical");
 
+	let state = ["", "", "", "", ""];
+    let show_battery = || -> Result<(usize, String, String), Box<dyn std::error::Error>>{
 		let warning_state = 30;
 		let critical_state = 15;
 
@@ -49,26 +29,25 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
 		let color;
 
 		if battery_state == "Charging" {
-			color = color_charging;		
+			color = color_charging.clone();		
 		}
 		else if battery_state == "Not charging" {
-			color = color_plugged;
+			color = color_plugged.clone();
 		}
 		else if battery_state == "Full" {
-			color = color_full;
+			color = color_full.clone();
 		}
 		else if battery_percent > warning_state {
-				color = color_battery;
+			color = color_battery.clone();
 		}
 		else if battery_percent > critical_state {
-			color = color_low_battery;
+			color = color_low_battery.clone();
 		}
 		else {
-			color = "#FFFFFF";
+			color = color_critical.clone();
 		}
-		save_battery_color_binary(color);
 		Ok((battery_percent, battery_state, color))							
-	}
+	};
 
 	fn show_remaining_time() -> Result<(i32, i32), Box<dyn std::error::Error>>{
 		let energy_now = Command::new("cat").arg("/sys/class/power_supply/BAT0/charge_now").output()?;
@@ -126,8 +105,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
 						println!("<span foreground='{}'>{}% </span>",  color, battery_percent)
 					}
 					else if battery_state == "Full" {
-						let color = "#40B792";
-						println!("<span foreground='{}'>Battery full</span>", color);					
+						println!("<span foreground='{}'>Battery full</span>", color_full);					
 					}
 					else {
 						println!("<span foreground='{}'>{}% {}</span>", color, battery_percent, state[(battery_percent/20).min(4)]);
@@ -141,14 +119,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
 
 					let color:&str;
 					if status == "Charging" || status == "Not charging" {
-						color = "#40B792";
+						color = &color_charging;
 						println!("<span foreground='{}'>Batterie charging</span>", color);
 					}else if status == "Full" {
-						color = "#40B792";
+						color = &color_full;
 						println!("<span foreground='{}'>Battery full</span>", color);					
 					}
 					else {
-						color = "#68d391";
+						color = &color_battery;
 						let Ok((remaining_hours, remaining_minute)) = show_remaining_time() else { todo!() };
 						println!("<span foreground='{}'>{} hours {} remaining</span>", color,remaining_hours, remaining_minute)
 					}
@@ -157,12 +135,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
 			}
 		}
 		else {
-			let color = "#40B792";
-			save_battery_color_binary(color);
-			println!("<span foreground='{}'>Batterie sur secteur</span>", color);
+			println!("<span foreground='{}'>Batterie sur secteur</span>", color_full);
 		}
 	} else {
 		println!("Fichier non trouvé : {}", state_file);
 	};
 	Ok(())
-}				
+}

@@ -39,59 +39,35 @@ impl SwaylockLocker {
             "swaylock"
         }
     }
+}
 
-    fn read_battery_color_hex() -> String {
-        let mut candidates = Vec::new();
-        if let Ok(runtime_dir) = std::env::var("XDG_RUNTIME_DIR") {
-            candidates.push(format!("{}/battery_color.bin", runtime_dir));
-        }
-        if let Ok(home) = std::env::var("HOME") {
-            candidates.push(format!("{}/.config/waybar/scripts/battery_color.bin", home));
-        }
-
-        for path in &candidates {
-            if let Ok(bytes) = std::fs::read(path) {
-                if bytes.len() >= 3 {
-                    return format!("{:02x}{:02x}{:02x}", bytes[0], bytes[1], bytes[2]);
-                }
-            }
-        }
-
-        Self::run_battery_script();
-
-        for path in &candidates {
-            if let Ok(bytes) = std::fs::read(path) {
-                if bytes.len() >= 3 {
-                    return format!("{:02x}{:02x}{:02x}", bytes[0], bytes[1], bytes[2]);
-                }
-            }
-        }
-
-        "38bdf8".to_string()
-    }
-
-    fn run_battery_script() {
-        if let Ok(home) = std::env::var("HOME") {
-            let release = format!("{}/.config/waybar/scripts/target/release/battery", home);
-            if Path::new(&release).exists() {
-                let _ = Command::new(&release).output();
-                return;
-            }
-            let debug = format!("{}/.config/waybar/scripts/target/debug/battery", home);
-            if Path::new(&debug).exists() {
-                let _ = Command::new(&debug).output();
-                return;
-            }
-        }
-        let _ = Command::new("battery").output();
-    }
+pub fn fetch_color(label_color : &str) -> String {
+    let colors = crate::Colors::load();
+    colors
+            .get(label_color)
+            .trim()
+            .trim_start_matches('#')
+            .to_string()
 }
 
 impl ScreenLocker for SwaylockLocker {
     fn lock(&self, image_path: &str) -> Result<(), std::io::Error> {
         let bin = Self::find_binary();
-        let battery_color = Self::read_battery_color_hex();
-        let ring_color = format!("{}55", battery_color);
+
+        let inside_color = fetch_color("lock_inside_color");
+        let ring_color = fetch_color("lock_ring_color");
+        let key_hl_color = fetch_color("lock_key_hl_color");
+        let bs_hl_color = fetch_color("lock_bs_hl_color");
+        let line_color = fetch_color("lock_line_color");
+        let separator_color = fetch_color("lock_separator_color");
+        let text_color = fetch_color("lock_text_color");
+        let text_clear_color = fetch_color("lock_text_clear_color");
+        let text_ver_color = fetch_color("lock_text_ver_color");
+        let text_wrong_color = fetch_color("lock_text_wrong_color");
+        let ring_ver_color = fetch_color("lock_ring_ver_color");
+        let ring_wrong_color = fetch_color("lock_ring_wrong_color");
+        let ring_clear_color = fetch_color("lock_ring_clear_color");
+
         let _ = Command::new(bin)
             .arg("-f")
             .arg("-i")
@@ -113,31 +89,31 @@ impl ScreenLocker for SwaylockLocker {
             .arg("--font")
             .arg("Noto Sans")
             .arg("--inside-color")
-            .arg("0d1b2acc")
+            .arg(&inside_color)
             .arg("--ring-color")
             .arg(&ring_color)
             .arg("--key-hl-color")
-            .arg(&battery_color)
+            .arg(&key_hl_color)
             .arg("--bs-hl-color")
-            .arg("f472b6")
+            .arg(&bs_hl_color)
             .arg("--line-color")
-            .arg("00000000")
+            .arg(&line_color)
             .arg("--separator-color")
-            .arg("00000000")
+            .arg(&separator_color)
             .arg("--text-color")
-            .arg("ffffff")
+            .arg(&text_color)
             .arg("--text-clear-color")
-            .arg("ffffff")
+            .arg(&text_clear_color)
             .arg("--text-ver-color")
-            .arg(&battery_color)
+            .arg(&text_ver_color)
             .arg("--text-wrong-color")
-            .arg("f87171")
+            .arg(&text_wrong_color)
             .arg("--ring-ver-color")
-            .arg(&battery_color)
+            .arg(&ring_ver_color)
             .arg("--ring-wrong-color")
-            .arg("f87171")
+            .arg(&ring_wrong_color)
             .arg("--ring-clear-color")
-            .arg("a78bfa")
+            .arg(&ring_clear_color)
             .status()?;
         Ok(())
     }

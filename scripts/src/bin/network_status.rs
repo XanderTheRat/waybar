@@ -15,6 +15,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
 	let network_mode = fs::read_to_string(&modefile)?.trim().parse::<u8>()?;
 	let _: Result<f64, Box<dyn std::error::Error>> = Ok(network_mode.into());
 	
+	let colors = waybar::Colors::load();
+	let net_disconnected = colors.get("network_disconnected");
+	let net_connected = colors.get("network_connected");
+	let net_ipv4 = colors.get("network_ipv4");
+	let net_ipv6 = colors.get("network_ipv6");
+	let net_ip_text = colors.get("network_ip_text");
+
 	if exists {
 		match network_mode {
 			1_u8 => {
@@ -23,10 +30,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
 				let ssid : Vec<&str> =nmcli.split_terminator(&[':','\n']).collect() ;
 
 				if ssid[2] == "lo" || ssid[2].is_empty() {
-					println!("<span foreground='#f87171'>⚠ Disconnected</span>");
+					println!("<span foreground='{}'>⚠ Disconnected</span>", net_disconnected);
 				}
 				else {
-					println!("<span foreground='#689f38'> {}</span>", ssid[2]);
+					println!("<span foreground='{}'> {}</span>", net_connected, ssid[2]);
 				}
 
 			},
@@ -41,15 +48,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
 				let color:&str;
 				let status_mode: i8;
 				if network_mode == 2 {
-					color = "#a78bfa";
+					color = &net_ipv4;
 					status_mode = 4;
 				}
 				else {
-					color = "#fb923c";
+					color = &net_ipv6;
 					status_mode = 6;
 				}
 
-				println!("<span foreground='{}'>ipv{}:</span><span foreground='#689f38'> {}</span>",color, status_mode, output_ip[network_mode as usize]);
+				println!("<span foreground='{}'>ipv{}:</span><span foreground='{}'> {}</span>",color, status_mode, net_ip_text, output_ip[network_mode as usize]);
 			}
 			_ => ()
 		}

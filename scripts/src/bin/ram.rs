@@ -4,7 +4,8 @@ use std::thread;
 use std::time::Duration;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let couleur_mem = "#f687b3";
+    let colors = waybar::Colors::load();
+    let couleur_mem = colors.get("couleur_mem");
     let path = "/proc/meminfo";
 
     let file = match File::open(path) {

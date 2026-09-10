@@ -4,7 +4,8 @@ use std::thread;
 use std::time::Duration;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let couleur_cpu = "#b794f4";
+    let colors = waybar::Colors::load();
+    let couleur_cpu = colors.get("couleur_cpu");
     let path = "/proc/stat";
 
     let file = match File::open(path) {

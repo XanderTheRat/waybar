@@ -145,7 +145,7 @@ pub struct Edt {
 
 impl Edt {
     pub const DEFAULT_TD_GROUP: &'static str = "G7";
-    pub const DEFAULT_TP_GROUP: &'static str = "B";
+    pub const DEFAULT_TP_GROUP: &'static str = "A";
 
     pub fn new(td_group: impl Into<String>, tp_group: impl Into<String>) -> Self {
         Self {
