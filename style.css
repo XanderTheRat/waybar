@@ -118,7 +118,8 @@ window#waybar {
 
 
 #custom-battery,
-#custom-network{
+#custom-network,
+#custom-ping{
 	padding: 2px 12px;
 	margin: 0  2px;
 	border-radius: 8px;
@@ -133,6 +134,7 @@ window#waybar {
 
 #pulseaudio:hover,
 #custom-network:hover,
+#custom-ping:hover,
 #mpris:hover,
 #custom-battery:hover {
     background: rgba(255, 255, 255, 0.15);
