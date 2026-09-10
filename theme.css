@@ -1,0 +1,73 @@
+/*System colors on waybar*/
+@define-color couleur_cpu #b794f4;
+@define-color couleur_mem #f687b3;
+@define-color color_battery #68d391;
+@define-color color_charging #48bb78;
+@define-color color_plugged #38b2ac;
+@define-color color_low_battery #f6ad55;
+@define-color color_full #40B792;
+@define-color color_critical #FFFFFF;
+
+/*Network color. Change the display on clicking on the status ( status/ipv4/ipv6 )*/
+@define-color network_disconnected #f87171;
+@define-color network_connected #689f38;
+@define-color network_ipv4 #a78bfa;
+@define-color network_ipv6 #fb923c;
+@define-color network_ip_text #689f38;
+
+/*Schedule color*/
+@define-color color_edt #E06C75;
+@define-color color_edt_no_course #98C379;
+@define-color color_room #F38BA8;
+@define-color color_room_no_course #A6E3A1;
+@define-color color_group #BF616A;
+
+/*Swaylock theme*/
+@define-color lock_battery_color #38bdf8;
+@define-color lock_inside_color #0d1b2acc;
+@define-color lock_ring_color #38bdf855;
+@define-color lock_key_hl_color #38bdf8;
+@define-color lock_bs_hl_color #f472b6;
+@define-color lock_line_color #00000000;
+@define-color lock_separator_color #00000000;
+
+@define-color lock_text_color #ffffff;
+@define-color lock_text_clear_color #ffffff;
+@define-color lock_text_ver_color #38bdf8;
+@define-color lock_text_wrong_color #f87171;
+
+@define-color lock_ring_ver_color #38bdf8;
+@define-color lock_ring_wrong_color #f87171;
+@define-color lock_ring_clear_color #a78bfa;
+
+@define-color lock_cm_card_bg_start #231e0f;
+@define-color lock_cm_card_bg_end #362c12;
+@define-color lock_cm_card_border #fff;
+@define-color lock_cm_badge_bg rgba(245, 158, 11, 0.22);
+@define-color lock_cm_badge_border rgba(245, 158, 11, 0.55);
+@define-color lock_cm_badge_color #FBBF24;
+@define-color lock_td_card_bg_start #24101e;
+@define-color lock_td_card_bg_end #38162f;
+@define-color lock_td_card_border rgba(244, 114, 182, 0.45);
+@define-color lock_td_badge_bg rgba(236, 72, 153, 0.22);
+@define-color lock_td_badge_border rgba(236, 72, 153, 0.55);
+@define-color lock_td_badge_color #F472B6;
+@define-color lock_tp_card_bg_start #0d1b2a;
+@define-color lock_tp_card_bg_end #152c42;
+@define-color lock_tp_card_border rgba(56, 189, 248, 0.45);
+@define-color lock_tp_badge_bg rgba(14, 165, 233, 0.22);
+@define-color lock_tp_badge_border rgba(14, 165, 233, 0.55);
+@define-color lock_tp_badge_color #38BDF8;
+
+@define-color lock_default_card_bg_start #0d2318;
+@define-color lock_default_card_bg_end #143725;
+@define-color lock_default_card_border rgba(74, 222, 128, 0.45);
+@define-color lock_default_badge_bg rgba(16, 185, 129, 0.22);
+@define-color lock_default_badge_border rgba(16, 185, 129, 0.55);
+@define-color lock_default_badge_color #4ADE80;
+
+@define-color lock_card_title #FFFFFF;
+@define-color lock_card_time #E2E8F0;
+@define-color lock_card_group #94A3B8;
+@define-color lock_card_separator rgba(255, 255, 255, 0.12);
+@define-color lock_card_shadow #000000;
