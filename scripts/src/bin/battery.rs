@@ -1,7 +1,6 @@
 use std::env;
 use std::fs;
 use std::path::Path;
-use std::process::Command;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let colors = waybar::Colors::load();
@@ -126,12 +125,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     }
                 }
                 2 => {
-                    let _ = show_battery();
-                    let battery_state = Command::new("cat")
-                        .arg("/sys/class/power_supply/BAT0/status")
-                        .output()?;
-                    let battery_state_not_trim = String::from_utf8_lossy(&battery_state.stdout);
-                    let status = battery_state_not_trim.trim().to_string();
+                    let battery_state_file = "/sys/class/power_supply/BAT0/status";
+
+                    let output_battery_state = match fs::read_to_string(battery_state_file) {
+                        Ok(a) => a,
+                        Err(e) => return Err(Box::new(e)),
+                    };
+
+                    let battery_state = output_battery_state.trim().to_string();
+                    let status = battery_state.trim().to_string();
 
                     let color: &str;
                     if status == "Charging" || status == "Not charging" {
