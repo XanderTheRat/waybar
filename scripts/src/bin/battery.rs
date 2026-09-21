@@ -17,19 +17,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let warning_state = 30;
         let critical_state = 15;
 
-        // TODO : Use rust build-in
+        let battery_output_file = "/sys/class/power_supply/BAT0/capacity";
+        let battery_state_file = "/sys/class/power_supply/BAT0/status";
 
-        let output_battery = Command::new("cat")
-            .arg("/sys/class/power_supply/BAT0/capacity")
-            .output()?;
-        let output_battery_state = Command::new("cat")
-            .arg("/sys/class/power_supply/BAT0/status")
-            .output()?;
-        let battery_state_not_trim = String::from_utf8_lossy(&output_battery_state.stdout);
+        let output_battery = match fs::read_to_string(battery_output_file) {
+            Ok(a) => a,
+            Err(e) => return Err(Box::new(e)),
+        };
+        let output_battery_state = match fs::read_to_string(battery_state_file) {
+            Ok(a) => a,
+            Err(e) => return Err(Box::new(e)),
+        };
 
-        let battery_output = String::from_utf8_lossy(&output_battery.stdout);
-        let battery = battery_output.trim();
-        let battery_state = battery_state_not_trim.trim().to_string();
+        let battery = output_battery.trim();
+        let battery_state = output_battery_state.trim().to_string();
         let battery_percent = battery.parse::<usize>()?;
         let _: Result<f64, Box<dyn std::error::Error>> = Ok(battery_percent as f64);
         let color;
@@ -51,32 +52,32 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
 
     fn show_remaining_time() -> Result<(i32, i32), Box<dyn std::error::Error>> {
-        let energy_now = Command::new("cat")
-            .arg("/sys/class/power_supply/BAT0/charge_now")
-            .output()?;
-        let energy_full = Command::new("cat")
-            .arg("/sys/class/power_supply/BAT0/charge_full")
-            .output()?;
-        let power_now = Command::new("cat")
-            .arg("/sys/class/power_supply/BAT0/current_now")
-            .output()?;
-        let output_battery_state = Command::new("cat")
-            .arg("/sys/class/power_supply/BAT0/status")
-            .output()?;
+        let charge_now_file = "/sys/class/power_supply/BAT0/charge_now";
+        let charge_full_file = "/sys/class/power_supply/BAT0/charge_full";
+        let current_now_file = "/sys/class/power_supply/BAT0/current_now";
+        let status_file = "/sys/class/power_supply/BAT0/status";
 
-        let remaining_power_not_trim = String::from_utf8_lossy(&energy_now.stdout);
-        let total_battery_capacity_not_trim = String::from_utf8_lossy(&energy_full.stdout);
-        let used_battery_not_trim = String::from_utf8_lossy(&power_now.stdout);
-        let battery_state_not_trim = String::from_utf8_lossy(&output_battery_state.stdout);
+        let energy_now = match fs::read_to_string(charge_now_file) {
+            Ok(a) => a,
+            Err(e) => return Err(Box::new(e)),
+        };
+        let energy_full = match fs::read_to_string(charge_full_file) {
+            Ok(a) => a,
+            Err(e) => return Err(Box::new(e)),
+        };
+        let power_now = match fs::read_to_string(current_now_file) {
+            Ok(a) => a,
+            Err(e) => return Err(Box::new(e)),
+        };
+        let output_battery_state = match fs::read_to_string(status_file) {
+            Ok(a) => a,
+            Err(e) => return Err(Box::new(e)),
+        };
 
-        let used_battery = used_battery_not_trim.trim().parse::<f64>()?;
-        let total_battery_capacity = total_battery_capacity_not_trim.trim().parse::<f64>()?;
-        let remaining_power = remaining_power_not_trim.trim().parse::<f64>()?;
-        let battery_state = battery_state_not_trim.trim();
-
-        let _ = Ok::<f64, Box<dyn std::error::Error>>(used_battery);
-        let _ = Ok::<f64, Box<dyn std::error::Error>>(total_battery_capacity);
-        let _ = Ok::<f64, Box<dyn std::error::Error>>(remaining_power);
+        let used_battery = power_now.trim().parse::<f64>()?;
+        let total_battery_capacity = energy_full.trim().parse::<f64>()?;
+        let remaining_power = energy_now.trim().parse::<f64>()?;
+        let battery_state = output_battery_state.trim();
 
         let remaining_hours: f64;
         // TODO : fix the output of time
